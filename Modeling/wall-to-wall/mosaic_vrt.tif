@@ -1,0 +1,145 @@
+<VRTDataset rasterXSize="52" rasterYSize="52">
+  <SRS dataAxisToSRSAxisMapping="2,1">PROJCS["ETRS89-extended / LAEA Europe",GEOGCS["ETRS89",DATUM["European_Terrestrial_Reference_System_1989",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],AUTHORITY["EPSG","6258"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4258"]],PROJECTION["Lambert_Azimuthal_Equal_Area"],PARAMETER["latitude_of_center",52],PARAMETER["longitude_of_center",10],PARAMETER["false_easting",4321000],PARAMETER["false_northing",3210000],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Northing",NORTH],AXIS["Easting",EAST],AUTHORITY["EPSG","3035"]]</SRS>
+  <GeoTransform>  4.1384200000000000e+06,  2.0000000000000000e+01,  0.0000000000000000e+00,  3.1499800000000000e+06,  0.0000000000000000e+00, -2.0000000000000000e+01</GeoTransform>
+  <VRTRasterBand dataType="Float32" band="1">
+    <NoDataValue>-9999</NoDataValue>
+    <ColorInterp>Gray</ColorInterp>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">Modeling/wall-to-wall/output/rk_CBD_1.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="26" RasterYSize="26" DataType="Float32" BlockXSize="26" BlockYSize="19" />
+      <SrcRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <DstRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">Modeling/wall-to-wall/output/rk_CBD_2.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="26" RasterYSize="26" DataType="Float32" BlockXSize="26" BlockYSize="19" />
+      <SrcRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <DstRect xOff="0" yOff="26" xSize="26" ySize="26" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">Modeling/wall-to-wall/output/rk_CBD_3.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="26" RasterYSize="26" DataType="Float32" BlockXSize="26" BlockYSize="19" />
+      <SrcRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <DstRect xOff="26" yOff="0" xSize="26" ySize="26" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">Modeling/wall-to-wall/output/rk_CBD_4.tif</SourceFilename>
+      <SourceBand>1</SourceBand>
+      <SourceProperties RasterXSize="26" RasterYSize="26" DataType="Float32" BlockXSize="26" BlockYSize="19" />
+      <SrcRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <DstRect xOff="26" yOff="26" xSize="26" ySize="26" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="2">
+    <NoDataValue>-9999</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">Modeling/wall-to-wall/output/rk_CBD_1.tif</SourceFilename>
+      <SourceBand>2</SourceBand>
+      <SourceProperties RasterXSize="26" RasterYSize="26" DataType="Float32" BlockXSize="26" BlockYSize="19" />
+      <SrcRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <DstRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">Modeling/wall-to-wall/output/rk_CBD_2.tif</SourceFilename>
+      <SourceBand>2</SourceBand>
+      <SourceProperties RasterXSize="26" RasterYSize="26" DataType="Float32" BlockXSize="26" BlockYSize="19" />
+      <SrcRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <DstRect xOff="0" yOff="26" xSize="26" ySize="26" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">Modeling/wall-to-wall/output/rk_CBD_3.tif</SourceFilename>
+      <SourceBand>2</SourceBand>
+      <SourceProperties RasterXSize="26" RasterYSize="26" DataType="Float32" BlockXSize="26" BlockYSize="19" />
+      <SrcRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <DstRect xOff="26" yOff="0" xSize="26" ySize="26" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">Modeling/wall-to-wall/output/rk_CBD_4.tif</SourceFilename>
+      <SourceBand>2</SourceBand>
+      <SourceProperties RasterXSize="26" RasterYSize="26" DataType="Float32" BlockXSize="26" BlockYSize="19" />
+      <SrcRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <DstRect xOff="26" yOff="26" xSize="26" ySize="26" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="3">
+    <NoDataValue>-9999</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">Modeling/wall-to-wall/output/rk_CBD_1.tif</SourceFilename>
+      <SourceBand>3</SourceBand>
+      <SourceProperties RasterXSize="26" RasterYSize="26" DataType="Float32" BlockXSize="26" BlockYSize="19" />
+      <SrcRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <DstRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">Modeling/wall-to-wall/output/rk_CBD_2.tif</SourceFilename>
+      <SourceBand>3</SourceBand>
+      <SourceProperties RasterXSize="26" RasterYSize="26" DataType="Float32" BlockXSize="26" BlockYSize="19" />
+      <SrcRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <DstRect xOff="0" yOff="26" xSize="26" ySize="26" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">Modeling/wall-to-wall/output/rk_CBD_3.tif</SourceFilename>
+      <SourceBand>3</SourceBand>
+      <SourceProperties RasterXSize="26" RasterYSize="26" DataType="Float32" BlockXSize="26" BlockYSize="19" />
+      <SrcRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <DstRect xOff="26" yOff="0" xSize="26" ySize="26" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">Modeling/wall-to-wall/output/rk_CBD_4.tif</SourceFilename>
+      <SourceBand>3</SourceBand>
+      <SourceProperties RasterXSize="26" RasterYSize="26" DataType="Float32" BlockXSize="26" BlockYSize="19" />
+      <SrcRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <DstRect xOff="26" yOff="26" xSize="26" ySize="26" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+  <VRTRasterBand dataType="Float32" band="4">
+    <NoDataValue>-9999</NoDataValue>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">Modeling/wall-to-wall/output/rk_CBD_1.tif</SourceFilename>
+      <SourceBand>4</SourceBand>
+      <SourceProperties RasterXSize="26" RasterYSize="26" DataType="Float32" BlockXSize="26" BlockYSize="19" />
+      <SrcRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <DstRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">Modeling/wall-to-wall/output/rk_CBD_2.tif</SourceFilename>
+      <SourceBand>4</SourceBand>
+      <SourceProperties RasterXSize="26" RasterYSize="26" DataType="Float32" BlockXSize="26" BlockYSize="19" />
+      <SrcRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <DstRect xOff="0" yOff="26" xSize="26" ySize="26" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">Modeling/wall-to-wall/output/rk_CBD_3.tif</SourceFilename>
+      <SourceBand>4</SourceBand>
+      <SourceProperties RasterXSize="26" RasterYSize="26" DataType="Float32" BlockXSize="26" BlockYSize="19" />
+      <SrcRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <DstRect xOff="26" yOff="0" xSize="26" ySize="26" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+    <ComplexSource>
+      <SourceFilename relativeToVRT="0">Modeling/wall-to-wall/output/rk_CBD_4.tif</SourceFilename>
+      <SourceBand>4</SourceBand>
+      <SourceProperties RasterXSize="26" RasterYSize="26" DataType="Float32" BlockXSize="26" BlockYSize="19" />
+      <SrcRect xOff="0" yOff="0" xSize="26" ySize="26" />
+      <DstRect xOff="26" yOff="26" xSize="26" ySize="26" />
+      <NODATA>-9999</NODATA>
+    </ComplexSource>
+  </VRTRasterBand>
+</VRTDataset>

@@ -1,0 +1,27 @@
+#,,,,,,,,,,,,,,,
+# Use this sample file to add delete or modify species code and/or equation set that are used by,,,,,,,,,,,,,,,
+# FuelCalc.,,,,,,,,,,,,,,,
+#,,,,,,,,,,,,,,,
+# By renaming this file or a copy of it to species.csv FuelCalc will recognize it and use it instead,,,,,,,,,,,,,,,
+#  of its normal internal species table,,,,,,,,,,,,,,,
+#,,,,,,,,,,,,,,,
+# If you need to add a species you could duplicate an existing entry in the table below and,,,,,,,,,,,,,,,
+#  add your new species code and name to it. OR you could create your own set of equations,,,,,,,,,,,,,,,
+#,,,,,,,,,,,,,,,
+# If you wish to make a hardwood tree have its canopy fuel included in canopy bulk density caclulations,,,,,,,,,,,,,,,
+#  you can change the  Inc CBD  column entry to  Yes  by default all hardwood are not included in,,,,,,,,,,,,,,,
+#  CBD calculations,,,,,,,,,,,,,,,
+#,,,,,,,,,,,,,,,
+# order,Species,Common,Conifer,Inc,,,,,,,Vert,Crown,Canpy,Bole,FOFEM-Mort
+# Num,code,Name,Hard,CBD,Tot,Fol,Twg,1in,3in,3+,Dist,Reduc,Cover,Volume,Spe-code
+1,ALDER,Alder,H,Yes,RA,RA,RA,RA,RA,RA,UN,DF,22,A00CURW260,ALRU2
+2,DFIR,Douglas Fir,C,Yes,DF,DF,DF,DF,DF,DF,DF,DF,16,I00FW2W202,PSME
+3,FIR,Fir,C,Yes,GF,GF,GF,GF,GF,GF,DF,WF,3,I00FW2W017,ABGR
+4,LARCH,Larch,C,Yes,WL,WL,WL,WL,WL,WL,PP,PP,14,I00FW2W073,LAOC
+5,PINE,Pine,C,Yes,LP,LP,LP,LP,LP,LP,LP,LP,11,I00FW2W108,PICO
+6,SPRUCE,Spruce,C,Yes,ES,ES,ES,ES,ES,ES,DF,WF,10,I00FW2W093,PIEN
+7,ODH,ODH,H,Yes,QA,QA,QA,BM,BM,BM,UN,WF,26,200DVEW746,POTR5
+8,ODL,ODL,H,Yes,QA,QA,QA,BM,BM,BM,UN,WF,26,200DVEW746,POTR5
+9,BIRCH,Birch,H,Yes,YB,YB,YB,RA,RA,RA,UN,DF,24,200DVEW746,BEAL2
+10,BEECH,Beech,H,Yes,TO,TO,TO,RA,RA,RA,UN,DF,24,200DVEW746,BEAL2
+11,OAK,Oak,H,Yes,RO,RO,RO,GC,GC,GC,UN,DF,28,B00BEHW631,QURU

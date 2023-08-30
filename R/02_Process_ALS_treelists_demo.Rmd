@@ -1,0 +1,317 @@
+---
+title: Process ALS point clouds to tree-level structure metrics
+author: Johannes Heisig
+always_allow_html: true
+output:
+  github_document:
+    toc: true
+---
+
+```{r rglsetup, echo=FALSE, include=FALSE, eval=TRUE}
+options(rgl.useNULL = TRUE)
+knitr::opts_chunk$set(fig.width=8.5)
+```
+
+```{r message=FALSE, warning=FALSE}
+# packages
+library(sf)
+library(stars)
+library(lidR)
+library(dplyr)
+library(mapview)
+library(tictoc)
+library(pbmcapply)
+library(readr)
+library(purrr)
+library(tidymodels)
+
+# directories and functions
+metrics_dir = "data/ALS/metrics"
+als_dir = "data/ALS/als_clips"
+fc_dir = "data/FuelCalc"
+for (d in c(metrics_dir, als_dir, fc_dir)) if (!dir.exists(d)) dir.create(d, recursive = T)
+source("R/00_lidar_metrics.R")
+
+# species raster
+species_codes = read.csv("data/Raster/tree_species_code.csv")
+tree_spec = read_stars("data/Raster/species_10m.tif") |> 
+  setNames("species") |> 
+  mutate(species = factor(species, levels = species_codes$ID, 
+                          labels = species_codes$name))
+```
+
+# Process tree-level metrics
+
+## ALS data
+
+Download an open LiDAR tile from the state of Northrhine-Westphalia.
+
+```{r}
+als_file = "data/ALS/ALS_demo_tile.laz"
+
+if (!file.exists(als_file)){
+  url = "https://www.opengeodata.nrw.de/produkte/geobasis/hm/3dm_l_las/3dm_l_las/3dm_32_387_5698_1_nw.laz"
+  download.file(url, als_file)
+}
+```
+
+
+Read ALS tile(s) into a catalog object. This demo uses just one tile, but you can provide multiple file names. Select only attributes of interest to save memory. In case of neighboring tiles, apply a buffer to prevent edge problems.
+
+```{r}
+ctg = readLAScatalog(als_file, select = "xyzc")
+opt_chunk_size(ctg) = 100
+opt_chunk_buffer(ctg) = 15
+opt_select(ctg) = "xyzc"
+summary(ctg)
+```
+
+## GEDI locations
+
+Serve as plot locations.
+
+```{r}
+g = st_read("data/GEDI/GEDI_demo_subset.gpkg", quiet=T) |> 
+  select(uniqueID) |> 
+  st_transform(st_crs(ctg$geometry))
+
+plot(ctg, map=F) 
+plot(g["uniqueID"], col=1:nrow(g), add=T)
+```
+
+```{r eval=FALSE, include=FALSE}
+plot(ctg, map=T) + mapview(g)
+```
+
+## Tree-level metrics
+
+Process point clouds to tree-level structure metrics, including tree height, tree base height, and position.
+
+1. clip at GEDI coordinate with 12.5 m radius
+2. normalize height using a ground surface that is modeling useing a Kriging method (40 nearest neighbors)
+3. segment individual trees using a region growing algorithm
+4. derive tree level height metrics (max height and crown base height)
+
+This routine is run in parallel to save time. It ouputs the segmented point cloud (`.las`) and the georeferenced metrics (`.gpkg`).
+
+```{r echo=TRUE}
+tic()
+metrics_list = pbmclapply(1:nrow(g), process_tlm2, gedi = g, .ctg = ctg, 
+           alsdir = als_dir, mdir = metrics_dir, mc.cores = 4)
+toc() # ~ 30 min
+```
+
+## Check example results
+
+```{r, fig.height=8, fig.width=8}
+sample_uID = 1145111
+sample_metrics = st_read(paste0(metrics_dir, "/uID_", sample_uID, ".gpkg"), quiet = T)
+sample_als = readLAS(paste0(als_dir, "/uID_", sample_uID, ".las"))
+
+# map
+par(bg = 'grey', fg = 'black')
+plot(sample_metrics["treeID"], pch = 16, cex = sample_metrics$share*100)
+
+# trees
+plot3D::scatter3D(sample_als$X, sample_als$Y, sample_als$Z, 
+                 colvar = sample_als$treeID, phi=30, pch = 16, 
+                 cex=0.4, alpha = 0.6, col.panel = "black",
+                 colkey = list(at = 1:max(sample_als$treeID),
+                               side = 4, addlines = TRUE,
+                               length = 0.9, width = 0.7,
+                               labels = 1:max(sample_als$treeID),
+                               col.axis = "white", col.clab = "white"))
+```
+
+```{r eval=FALSE, include=FALSE}
+# map
+mapview(sample_metrics, zcol = "Zmax")
+
+# trees
+plot(sample_als, color = "treeID", size = 4, axis =T)
+rgl::rglwidget()
+```
+
+## Gather metrics
+
+```{r}
+files_metrics = list.files(metrics_dir, full.names = T)
+files_als = list.files(als_dir, full.names = T)
+
+ids_metrics = parse_number(basename(files_metrics))
+ids_als = parse_number(basename(files_als))
+identical(ids_als, ids_metrics)
+
+read_with_id = function(path){
+  id = parse_number(basename(path))
+  m = st_read(path, quiet=T)
+  m$uniqueID = id
+  return(select(m, uniqueID, treeID, Z = Zmax, everything()))
+}
+
+metrics = map_dfr(files_metrics, read_with_id) |> 
+  st_transform(st_crs(tree_spec))
+```
+
+## Add species label
+
+Display tree locations on species raster and extract.
+
+```{r fig.width=9, fig.height=8, message=FALSE, warning=FALSE}
+metrics$species = st_extract(tree_spec, metrics) |> pull(1)
+summary(metrics$species) # 69 species labels missing
+
+plot(tree_spec, key.pos=1, key.length = 1, reset=F)
+plot(metrics, pch = 21, bg = rainbow(10)[metrics$treeID], 
+     col = "grey30", cex = 0.5, add=T)
+```
+
+## Handle missing species labels
+
+Find dominant species per plot.
+
+```{r}
+dominant_species = metrics |> 
+  st_drop_geometry() |> 
+  group_by(uniqueID) |> 
+  count(species) |> 
+  summarise(Ndom = sum(n), dom_spec = species[which.max(n)], 
+            perc_dom = n[which.max(n)]/Ndom, 
+            Nna = sum(is.na(species)),
+            perc_na = Nna/Ndom, .groups = "drop") 
+
+summary(dominant_species[,2:6])
+```
+
+Insert dominant species label where missing.
+
+```{r}
+metrics_complete = inner_join(metrics, select(dominant_species, uniqueID, dom_spec), 
+                              by = "uniqueID") |> 
+  mutate(species = case_when(is.na(species) ~ dom_spec, TRUE ~ species)) |> 
+  filter(sum(is.na(species)) == 0, .by = uniqueID)
+```
+
+# Prepare tree lists for Fuel Calc
+
+## DBH and Crown Class
+
+Predict diameter at breast height (DBH) with pre-trained models based on German national forest inventory data.
+
+```{r}
+DBHmodels = readRDS("data/ALS/DBH_models.rds")
+
+for (i in 1:nrow(DBHmodels)){
+  S = DBHmodels$species[i]
+  metrics_complete$DBH[metrics_complete$species == S] = 
+    predict(DBHmodels$fit_wf[[i]], 
+            filter(metrics_complete, species == S) |> 
+              select(Z)) |> 
+    pull() |> round()
+}
+```
+
+Infer Crown Class based on top position within canopy. Can be dominant (D), co-dominant (C), or suppressed (S).
+
+```{r}
+crcl = function(Z){
+  if (length(Z) == 1){
+    return(c(cl = as.factor("D")))
+  } else{
+  m = mean(Z, na.rm=T)
+  s = sd(Z, na.rm=T)
+  up = m + s
+  lo = m - s 
+  cut(Z, breaks = c(0, lo, up, 100), labels = c("S","C","D"))
+  }
+}
+
+metrics_complete$CrCl = group_by(metrics_complete, uniqueID) |> 
+  group_map(~crcl(.$Z)) |> unlist()
+```
+
+Fix unrealistic DBH and CBH.
+
+```{r}
+unrealistic = sum(metrics_complete$CBH > metrics_complete$Z*0.9 | metrics_complete$CBH < 2)
+unrealistic / nrow(metrics_complete) # ~9 %
+sum(metrics_complete$DBH < 70) / nrow(metrics_complete) # 0 %
+
+metrics_complete = mutate(metrics_complete, 
+                          CBH = ifelse(CBH > Z*0.9 | CBH < 2, Z/2, CBH)) |>       
+  filter(DBH > 70)
+```
+ 
+```{r}
+summary(metrics_complete)
+par(mfrow=c(1,3))
+hist(metrics_complete$Z, main = "Z", xlab = "m")      # canopy height
+hist(metrics_complete$CBH, main = "CBH", xlab = "m")  # canopy base height
+hist(metrics_complete$DBH, main = "DBH", xlab = "mm") # diameter breast height
+t_spec = table(metrics_complete$species)
+t_spec[t_spec > 0]
+```
+
+## Export to FuelCalc
+
+1. `.tre` file containing tree lists
+
+```{r}
+export_treelist = function(x){
+  
+  t = data.frame(
+    PlotId = paste0("ID_", x$uniqueID), 
+    MonStatus = "Inventory", MonOrder = 1,
+    TreeSpecies = as.character(x$species), 
+    TreeExpansionFactor = 8.25,                    # Trees Per Acre: 4047 / (12.5*12.5*pi)  = ~ 8.25   
+    Diameter = round(x$DBH/10 / 2.54),             # diameter mm in inches
+    TreeHeight = round(x$Z * 3.2808399),
+    CrownBaseHeight = round(x$CBH * 3.2808399),    # heights in feet
+    TreeStatus = "H",
+    CrownClass = x$CrCl, CrownRatio = "", CharHeight = "",
+    CrownScorchPercent = "", CrownScorchHeight = "", CKR = "",
+    BeetleDamage = "No", EquationType = "CRNSCH", FlHt.ScHt = 0,
+    FS = "F", Severity = "" )
+  
+  t = mutate(t, TreeSpecies = case_when( 
+    TreeSpecies == "Birch" ~ "BIRCH",      # = Yellow Birch
+    TreeSpecies == "Beech" ~ "BEECH",      # = Tan Oak
+    TreeSpecies == "Douglas_fir" ~ "DFIR", # = Douglas Fir
+    TreeSpecies == "Oak" ~ "OAK",          # = Northern Red Oak
+    TreeSpecies == "Alder" ~ "ALDER",      # = Red Alder
+    TreeSpecies == "Spruce" ~ "SPRUCE",    # = Engelman Spruce
+    TreeSpecies == "Pine" ~ "PINE",        # = Lodgepole Pine
+    TreeSpecies == "Larch" ~ "LARCH",      # = Western Larch
+    TreeSpecies == "Fir" ~ "FIR",          # = Grand Fir
+    TreeSpecies == "ODH" ~ "ODH",          # = Quaking Aspen
+    TreeSpecies == "ODL" ~ "ODL",          # = Quaking Aspen
+    TRUE ~ TreeSpecies))
+  return(t)
+}
+
+tl = export_treelist(metrics_complete)
+head(tl, 2)
+write.csv(tl, file.path(fc_dir,"input_treelist.tre"), row.names = F, quote = F)
+```
+
+2. `.ffi` file containing plot info
+
+```{r}
+export_plotlist = function(x){
+  ffi = read.csv(file.path(fc_dir, "test_file.FFI"))
+  fh = data.frame(matrix(ncol=ncol(ffi), nrow = length(unique(x$uniqueID))))
+  names(fh) = names(ffi)
+  fh[] = 1
+  fh$PlotId = paste0("ID_", unique(x$uniqueID))
+  fh$MonStatus = "Inventory"
+  fh$EmisCWDRSC = fh$EmisDuffRSC = fh$EmisSTFS = ""
+  return(fh)
+}
+
+pl = export_plotlist(metrics_complete)
+head(pl, 2)
+
+write.csv(pl, file.path(fc_dir,"input_treelist.ffi"), row.names = F, quote = F)
+```
+
+
