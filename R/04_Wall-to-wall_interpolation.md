@@ -3,8 +3,7 @@ Interpolate Point-Level Canopy Fuels to Wall-to-Wall Rasters
 Johannes Heisig
 
 - [Setup](#setup)
-- [Data](#data)
-- [Models](#models)
+- [Data and models](#data-and-models)
 - [Interpolation](#interpolation)
 
 ``` r
@@ -20,12 +19,12 @@ dir = "Modeling/wall-to-wall"
 ## Setup
 
 ``` r
-v = "CBD"
+v = "CBD"  # Run demo for this single target variable
 vars = c("CBD", "CBH", "SH", "CC", "CFL")
 predvars = c(paste0("p_", vars[1:5]))
 ```
 
-## Data
+## Data and models
 
 Covariate raster.
 
@@ -57,10 +56,32 @@ tile_size = 26   # small demo tile size. can be much larger.
 tiles = st_tile(nrow(r), ncol(r), tile_size, tile_size)
 ```
 
+Download file(s) if necessary.
+
+``` r
+# model data
+train_data_file = "LM_canopy_fuel_modeling_data.rds"
+train_data_path = file.path(dir, "lm", train_data_file)
+if (! file.exists(train_data_path)){
+  options(timeout = 600)
+  url = paste0("https://zenodo.org/record/8288648/files/", train_data_file, "?download=1")
+  download.file(url, train_data_path)
+}
+# model
+model_file = paste0("LM_", v, "_rf.rds")
+model_path = file.path(dir, "lm", model_file)
+
+if (! file.exists(model_path)){
+  options(timeout = 600)
+  url = paste0("https://zenodo.org/record/8288648/files/", model_file, "?download=1")
+  download.file(url, model_path)
+}
+```
+
 Linear model training data (demo subset).
 
 ``` r
-train_lm = readRDS(file.path(dir, "lm/LM_canopy_fuel_modeling_data.rds"))
+train_lm = readRDS(train_data_path)
 gedi = readRDS("Modeling/point_level/GEDI_canopy_fuel_predictions_RF.rds")
 
 geom_train = as.character(train_lm$geometry)
@@ -68,12 +89,10 @@ index_train_gedi = which(geom_train %in% as.character(gedi$geom))
 gedi_cov = train_lm[index_train_gedi, ]
 ```
 
-## Models
-
 Linear regression and variogram models.
 
 ``` r
-model = readRDS(file.path(dir, paste0("lm/LM_", v, "_rf.rds")))
+model = readRDS(model_path)
 identical(length(model$residuals), nrow(train_lm)) # matches train_lm
 ```
 
@@ -168,4 +187,4 @@ mosaic = read_stars(mosaic_file) |> split(3) |>
 plot(mosaic, main = paste0(v, " - Universal Kriging result"), col = rev(topo.colors(11)))
 ```
 
-![](04_Wall-to-wall_interpolation_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](04_Wall-to-wall_interpolation_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->

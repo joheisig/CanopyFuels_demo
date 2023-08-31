@@ -126,6 +126,16 @@ for(v in vars){
 }}
 ```
 
+    ## Downloading rf_CBD.rds
+
+    ## Downloading rf_CBH.rds
+
+    ## Downloading rf_CH.rds
+
+    ## Downloading rf_CC.rds
+
+    ## Downloading rf_CFL.rds
+
 ``` r
 gedi_pred = st_drop_geometry(gedi)  # remove spatial features for prediction
 for(v in vars){

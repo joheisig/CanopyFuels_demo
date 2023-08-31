@@ -20,7 +20,7 @@ dir = "Modeling/wall-to-wall"
 ## Setup 
 
 ```{r}
-v = "CBD"
+v = "CBD"  # Run demo for this single target variable
 vars = c("CBD", "CBH", "SH", "CC", "CFL")
 predvars = c(paste0("p_", vars[1:5]))
 ```
@@ -64,6 +64,7 @@ Download file(s) if necessary.
 train_data_file = "LM_canopy_fuel_modeling_data.rds"
 train_data_path = file.path(dir, "lm", train_data_file)
 if (! file.exists(train_data_path)){
+  options(timeout = 600)
   url = paste0("https://zenodo.org/record/8288648/files/", train_data_file, "?download=1")
   download.file(url, train_data_path)
 }
@@ -72,6 +73,7 @@ model_file = paste0("LM_", v, "_rf.rds")
 model_path = file.path(dir, "lm", model_file)
 
 if (! file.exists(model_path)){
+  options(timeout = 600)
   url = paste0("https://zenodo.org/record/8288648/files/", model_file, "?download=1")
   download.file(url, model_path)
 }
@@ -80,7 +82,7 @@ if (! file.exists(model_path)){
 Linear model training data (demo subset).
 
 ```{r}
-train_lm = readRDS(train_data_file)
+train_lm = readRDS(train_data_path)
 gedi = readRDS("Modeling/point_level/GEDI_canopy_fuel_predictions_RF.rds")
 
 geom_train = as.character(train_lm$geometry)

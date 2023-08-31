@@ -126,13 +126,10 @@ This routine is run in parallel to save time. It ouputs the segmented
 point cloud (`.las`) and the georeferenced metrics (`.gpkg`).
 
 ``` r
-tic()
+# takes ~ 30 min
 metrics_list = pbmclapply(1:nrow(g), process_tlm2, gedi = g, .ctg = ctg, 
            alsdir = als_dir, mdir = metrics_dir, mc.cores = 4)
-toc() # ~ 30 min
 ```
-
-    ## 0.05 sec elapsed
 
 ## Check example results
 
