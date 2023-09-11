@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+data/ALS/als_clips/*
+data/ALS/metrics/*
+data/ALS/ALS_demo_tile.laz
+data/GEDI/GEDI_all.rds
+Modeling/point_level/rf_*
+Modeling/interpolation/lm/*

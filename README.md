@@ -22,6 +22,6 @@ Clip, segment, and reduce LiDAR point clouds to derive tree-level structure metr
 
 Predict point-level canopy fuels with pre-trained Random Forest models.
 
-- [`04_Wall-to-wall_interpolation.Rmd`](R/04_Wall-to-wall_interpolation.md)
+- [`04_Interpolation.Rmd`](R/04_Interpolation.md)
 
-Interpolate point estimates with biophysical raster covariates and Universal Kriging to produce 20 meter canopy fuels maps.
+Interpolate point estimates with biophysical raster covariates and Universal Kriging to produce 20-meter canopy fuels maps.

@@ -1,5 +1,5 @@
 ---
-title: Interpolate Point-Level Canopy Fuels to Wall-to-Wall Rasters
+title: Interpolate Point-Level Canopy Fuels to Rasters Maps
 author: Johannes Heisig
 always_allow_html: true
 output:
@@ -14,7 +14,7 @@ library(sf)
 library(gstat)
 library(dplyr)
 })
-dir = "Modeling/wall-to-wall"
+dir = "Modeling/interpolation"
 ```
 
 ## Setup 

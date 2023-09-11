@@ -1,4 +1,4 @@
-Interpolate Point-Level Canopy Fuels to Wall-to-Wall Rasters
+Interpolate Point-Level Canopy Fuels to Rasters Maps
 ================
 Johannes Heisig
 
@@ -13,7 +13,7 @@ library(sf)
 library(gstat)
 library(dplyr)
 })
-dir = "Modeling/wall-to-wall"
+dir = "Modeling/interpolation"
 ```
 
 ## Setup
@@ -187,4 +187,4 @@ mosaic = read_stars(mosaic_file) |> split(3) |>
 plot(mosaic, main = paste0(v, " - Universal Kriging result"), col = rev(topo.colors(11)))
 ```
 
-![](04_Wall-to-wall_interpolation_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](04_Interpolation_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
